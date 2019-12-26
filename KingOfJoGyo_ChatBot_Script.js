@@ -121,4 +121,68 @@ function writeDataSetJSON(_updateObj){
       console.log(dataSet.length);
   });
 }
+
+function updateDataSet(){
+  var sheetDataLink_JYF = "https://spreadsheets.google.com/feeds/cells/1llk5IZ41U5Ul3kOQva8jkZwZlreHBmtzTwhgTwpeXGo/2/public/basic?alt=json-in-script";
+  var updateObj = [];
+
+  console.log("업데이트 DB 실행중");
+
+  axios.get(sheetDataLink_JYF).then(function(response) {
+      var sheetJson = response.data.slice(28,response.data.length-2);
+      entry = JSON.parse(sheetJson).feed.entry;
+      var num = 1;
+
+      for(var i in entry){
+        if(entry[i].content.$t == num){
+          var oneline = {
+            lecture: "",
+            week: "",
+            question: "",
+            answer: "",
+            keyword: []
+          };
+
+          var num2 = i;
+          num2++;
+
+          try {
+            while(entry[num2].content.$t != num+1){
+              switch (entry[num2].title.$t.substring(0,1)) {
+                case "B":
+                oneline.lecture = entry[num2].content.$t;
+                break;
+                case "C":
+                oneline.week = entry[num2].content.$t;
+                break;
+                case "D":
+                oneline.question = entry[num2].content.$t;
+                break;
+                case "E":
+                oneline.answer = entry[num2].content.$t;
+                break;
+                default:
+                oneline.keyword.push(entry[num2].content.$t);
+              }
+              num2++;
+            }
+          } catch (e) {
+
+          }
+
+          updateObj.push(oneline);
+          num++;
+        }
+      }
+
+      writeDataSetJSON(updateObj);
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+
+
+      console.log("업데이트 DB 종료");
+}
+
 // -----------------------------------------------------------
