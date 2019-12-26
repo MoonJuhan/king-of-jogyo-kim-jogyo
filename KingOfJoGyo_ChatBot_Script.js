@@ -138,6 +138,31 @@ apiRouter.post('/ht_que1', function(req, res) {
   res.status(200).send(responseBody);
 });
 
+// DB 업데이트 스킬
+apiRouter.post('/ht_dbUpdate', function(req, res) {
+  const responseBody = {
+    version: "2.0",
+    template: {
+      outputs: [
+        {
+          simpleText: {
+            text: "업데이트 되었습니다."
+          }
+        }
+      ],
+      quickReplies: [
+        {
+          action: "block",
+          label: "처음으로",
+          blockId: "5e0414ebffa74800014b8e72"
+        }
+      ]
+    }
+  };
+  console.log("DB 업데이트");
+  res.status(200).send(responseBody);
+  updateDataSet();
+});
 
 // FAQ 스킬
 apiRouter.post('/ht_que2', function(req, res) {
