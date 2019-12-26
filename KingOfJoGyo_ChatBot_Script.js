@@ -103,12 +103,10 @@ function getAccessToken(oAuth2Client, callback) {
 // 해커톤 챗봇
 var dataSet = [];
 
-
 fs.readFile("QnA_JSON.json", function(err, data) {
     dataSet = JSON.parse(data);
     console.log(dataSet.length);
 });
-
 
 // 질문 직접 입력
 apiRouter.post('/ht_que1', function(req, res) {
@@ -139,6 +137,54 @@ apiRouter.post('/ht_que1', function(req, res) {
   console.log("조교왕_김조교");
   res.status(200).send(responseBody);
 });
+
+
+// FAQ 스킬
+apiRouter.post('/ht_que2', function(req, res) {
+  const responseBody = {
+    version: "2.0",
+    template: faq(req)
+  };
+  console.log("조교왕_김조교 FAQ");
+
+  res.status(200).send(responseBody);
+});
+
+function faq(req){
+
+  if(QuestFind(req).length == 0){
+    var ans = {
+      outputs: [
+        {
+          simpleText: {
+            text: "등록된 질문이 없습니다."
+          }
+        }
+      ],
+      quickReplies: [
+        {
+          action: "block",
+          label: "직접 질문하기",
+          blockId: "5e0426a3ffa74800014b8ff1"
+        }
+      ]
+    }
+  }
+  else{
+    var ans = {
+      outputs: [
+        {
+          simpleText: {
+            text: "질문을 선택하세요"
+          }
+        }
+      ],
+      quickReplies: QuestFind(req)
+    }
+  }
+
+  return ans;
+}
 
 function writeDataSetJSON(_updateObj){
   var json = JSON.stringify(_updateObj);
