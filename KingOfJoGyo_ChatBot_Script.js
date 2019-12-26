@@ -375,4 +375,102 @@ function updateDataSet(){
       console.log("업데이트 DB 종료");
 }
 
+function ht_callAppsScript(auth, parameter) { // eslint-disable-line no-unused-vars
+  console.log(parameter);
+  const scriptId = "1VUGXgd5MxQqbBgM-ygeB9jYT2HwDJSxlheeOmfapO7jSKi2jICKcD_8x";
+  const script = google.script('v1');
+  // Make the API request. The request object is included here as 'resource'.
+  script.scripts.run({
+    auth: auth,
+    resource: {
+      function: 'ht_write',
+      devMode: "true",
+      parameters: parameter
+    },
+    scriptId: scriptId,
+  }, function(err, resp) {
+    if (err) {
+      console.log('The API returned an error: ' + err);
+      return;
+    }
+    if (resp.error) {
+      const error = resp.error.details[0];
+      console.log('Script error message: ' + error.errorMessage);
+      console.log('Script error stacktrace:');
+
+      if (error.scriptStackTraceElements) {
+        for (let i = 0; i < error.scriptStackTraceElements.length; i++) {
+          const trace = error.scriptStackTraceElements[i];
+          console.log('\t%s: %s', trace.function, trace.lineNumber);
+        }
+      }
+    } else {
+      const folderSet = resp.data.response.result;
+      console.log(Object.keys(folderSet));
+      if (Object.keys(folderSet).length == 0) {
+        console.log('No folders returned!');
+      } else {
+        console.log('Folders under your root folder:');
+        Object.keys(folderSet).forEach(function(id) {
+          console.log('\t%s (%s)', folderSet[id], id);
+        });
+      }
+    }
+  });
+}
+
+function splitKeyword(input, _dataSet){
+  var splitBlank = input.split(" ");
+  var keyword = [];
+  for(var i in splitBlank){
+    var splitText = splitBlank[i].split("은");
+    for(var j in splitText){
+      if(splitText[j] != "" && keyword.indexOf(splitText[j]) == -1){
+        keyword.push(splitText[j]);
+      }
+    }
+    splitText = splitBlank[i].split("는");
+    for(var j in splitText){
+      if(splitText[j] != "" && keyword.indexOf(splitText[j]) == -1){
+        keyword.push(splitText[j]);
+      }
+    }
+    splitText = splitBlank[i].split("이");
+    for(var j in splitText){
+      if(splitText[j] != "" && keyword.indexOf(splitText[j]) == -1){
+        keyword.push(splitText[j]);
+      }
+    }
+    splitText = splitBlank[i].split("가");
+    for(var j in splitText){
+      if(splitText[j] != "" && keyword.indexOf(splitText[j]) == -1){
+        keyword.push(splitText[j]);
+      }
+    }
+  }
+  console.log(keyword);
+  console.log(_dataSet);
+
+  for(var i in keyword){
+    if(_dataSet.keyword.indexOf(keyword[i]) != -1){
+      keyword[i] = "";
+    }
+  }
+  keyword = keyword.filter(isNotEmpty);
+
+  console.log(keyword);
+
+  var param = {
+    keyword: keyword,
+    answer: _dataSet.answer,
+    type: "keyword"
+  }
+
+  ht_callAppsScript(_auth, param);
+}
+
+function isNotEmpty(value) {
+  return value != "";
+}
+
 // -----------------------------------------------------------
