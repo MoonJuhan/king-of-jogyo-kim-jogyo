@@ -268,6 +268,38 @@ function answer(req){
 
 }
 
+function match(quest, _subject, _week){
+  var max = {cnt: 0, index: 0};
+  var mincnt = 2;
+  for(var i in dataSet){
+    var cnt = 0;
+    for(var j in dataSet[i].keyword){
+      if(quest.includes(dataSet[i].keyword[j])){
+        cnt++;
+      }
+    }
+    if(cnt > max.cnt){
+      max.index = i;
+      max.cnt = cnt;
+    }
+  }
+
+  if(max.cnt < mincnt){
+    //구글 앱스 스크립트 호출
+    //새로운 질문 입력하기
+    var param = {
+      input: quest,
+      subject: _subject,
+      week: _week,
+      type: "new"
+    }
+    ht_callAppsScript(_auth, param);
+    return "질문에 대한 답변이 없습니다. 상담직원에게 연결하세요";
+  }
+  splitKeyword(quest, dataSet[max.index]);
+  return dataSet[max.index].answer;          //해당 string과 키워드 개수가 가장 많은 데이터 오브젝트 반환
+}
+
 function writeDataSetJSON(_updateObj){
   var json = JSON.stringify(_updateObj);
   fs.writeFile('QnA_JSON.json', json, function(err, result) {
