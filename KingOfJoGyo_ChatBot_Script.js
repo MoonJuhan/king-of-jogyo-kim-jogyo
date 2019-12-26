@@ -110,6 +110,36 @@ fs.readFile("QnA_JSON.json", function(err, data) {
 });
 
 
+// 질문 직접 입력
+apiRouter.post('/ht_que1', function(req, res) {
+  const responseBody = {
+    version: "2.0",
+    template: {
+      outputs: [
+        {
+          simpleText: {
+            text: answer(req)
+          }
+        }
+      ],
+      quickReplies: [
+        {
+          action: "block",
+          label: "처음으로",
+          blockId: "5e0414ebffa74800014b8e72"
+        },
+        {
+          action: "block",
+          label: "다시 질문하기",
+          blockId: "5e0426a3ffa74800014b8ff1"
+        }
+      ]
+    }
+  };
+  console.log("조교왕_김조교");
+  res.status(200).send(responseBody);
+});
+
 function writeDataSetJSON(_updateObj){
   var json = JSON.stringify(_updateObj);
   fs.writeFile('QnA_JSON.json', json, function(err, result) {
