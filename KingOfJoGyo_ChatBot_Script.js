@@ -211,6 +211,63 @@ function faq(req){
   return ans;
 }
 
+function QuestFind(req){
+
+  try {
+    var qus = [];
+    for(var i in req.body.contexts){
+      if(req.body.contexts[i].name == "Subject"){
+        var target = req.body.contexts[i];
+        for(var j in dataSet)
+        {
+          if ((dataSet[j].lecture == target.params["과목명"].resolvedValue) && (dataSet[j].week == target.params["주차"].resolvedValue))
+          {
+            var obj_dataSet = {
+              action: "block",
+              label: dataSet[j].question,
+              blockId: "5e046015b617ea00015a80f1"
+            };
+            qus.push(obj_dataSet);
+          }
+        }
+      }
+    }
+  }
+  catch (e) {
+  }
+
+  return qus;
+}
+
+function answer(req){
+  var inputText;
+  inputText = req.body.userRequest.utterance;
+
+  try {
+    if(req.body.action.params["질문"] != null){
+      inputText = req.body.action.params["질문"];
+    }
+    for(var i in req.body.contexts){
+      if(req.body.contexts[i].name == "Subject"){
+        console.log(req.body.contexts[i].params["과목명"]);
+          console.log(req.body.contexts[i].params["주차"]);
+      }
+    }
+  } catch (e) {
+    console.log("no contexts");
+  }
+
+  console.log(req.body.action.params["질문"]);
+  try {
+    return match(inputText, req.body.contexts[i].params["과목명"].resolvedValue, req.body.contexts[i].params["주차"].resolvedValue);
+  } catch (e) {
+    return match(inputText, "", "");
+  } finally {
+
+  }
+
+}
+
 function writeDataSetJSON(_updateObj){
   var json = JSON.stringify(_updateObj);
   fs.writeFile('QnA_JSON.json', json, function(err, result) {
