@@ -98,7 +98,27 @@ function getAccessToken(oAuth2Client, callback) {
   });
 }
 
+
 // -----------------------------------------------------------
 // 해커톤 챗봇
+var dataSet = [];
 
+
+fs.readFile("QnA_JSON.json", function(err, data) {
+    dataSet = JSON.parse(data);
+    console.log(dataSet.length);
+});
+
+
+function writeDataSetJSON(_updateObj){
+  var json = JSON.stringify(_updateObj);
+  fs.writeFile('QnA_JSON.json', json, function(err, result) {
+    if(err) console.log('error', err);
+  });
+
+  fs.readFile("QnA_JSON.json", function(err, data) {
+      dataSet = JSON.parse(data);
+      console.log(dataSet.length);
+  });
+}
 // -----------------------------------------------------------
